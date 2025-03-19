@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EyeCheck - Cataract Detection Tool</title>
+    <meta name="theme-color" content="#3ba2e7">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="manifest" href="{{ url_for('static', filename='scripts/manifest.json') }}">
+    </link>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #5f7adb;
+            --primary-dark: #4a5eb9;
+            --secondary-color: #26baee;
+            --accent-color: #5eead4;
+            --light-bg: #f8fafc;
+            --dark-text: #334155;
+            --light-text: #f8fafc;
+            --warning: #fbbf24;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%);
+            color: var(--dark-text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            box-shadow: 0 4px 12px rgba(95, 122, 219, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 32px;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .disclaimer {
+            background-color: #fffbeb;
+            border-left: 4px solid var(--warning);
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .disclaimer strong {
+            color: #b45309;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 40px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 30px;
+            position: relative;
+        }
+
+        .card-header h2 {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+
+        .card-header p {
+            opacity: 0.9;
+            font-weight: 300;
+            font-size: 16px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: #f8fafc;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        #image-upload {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .preview-container {
+            margin: 30px auto;
+            max-width: 400px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        #upload-preview {
+            width: 100%;
+            display: block;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(95, 122, 219, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(95, 122, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            box-shadow: 0 4px 12px rgba(95, 122, 219, 0.15);
+        }
+
+        .analyze-btn {
+            display: none;
+            margin: 20px auto;
+            width: 200px;
+        }
+
+        #analysis-result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            display: none;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .result-positive {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+        }
+
+        .result-negative {
+            background-color: #d1fae5;
+            border: 1px solid #a7f3d0;
+        }
+
+        #result-heading {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-positive #result-heading {
+            color: var(--danger);
+        }
+
+        .result-negative #result-heading {
+            color: var(--success);
+        }
+
+        .analysis-animation {
+            margin: 30px auto;
+            text-align: center;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(95, 122, 219, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-card {
+            padding: 25px;
+        }
+
+        .info-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-card h3 svg {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-color);
+        }
+
+        .info-card ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card ul li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .info-card ul li::before {
+            content: "";
+            position: absolute;
+            left: -20px;
+            top: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+        }
+
+        .image-comparison {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .comparison-image {
+            width: 48%;
+            min-width: 250px;
+            margin: 10px auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .comparison-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .comparison-image p {
+            padding: 10px;
+            text-align: center;
+            background: #f8fafc;
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .footer-links {
+            margin-top: 10px;
+        }
+
+        .footer-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="{{ url_for('static', filename='images/3-removebg-preview.png') }}"
+                        alt="Healthy eye example" height="60px" width="60px">
+                </div>
+                <div class="logo-text">EyeCheck</div>
+            </div>
+            <h1>Cataract Detection Tool</h1>
+            <p>Upload a clear eye image and receive instant feedback on potential cataract signs</p>
+        </header>
+
+        <div class="disclaimer">
+            <strong>Medical Disclaimer:</strong> This tool is for educational purposes only and is not a substitute for
+            professional medical advice. Always consult with an ophthalmologist for proper diagnosis and treatment.
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Upload & Analyze</h2>
+                <p>Please upload a clear, well-lit close-up image of an eye</p>
+            </div>
+            <div class="card-body">
+                <div class="upload-area" id="dropzone">
+                    <div class="upload-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                    </div>
+                    <h3>Drag & Drop or Click to Upload</h3>
+                    <p class="upload-text">Supported formats: JPG, PNG, JPEG</p>
+                    <input name="eyeimg" type="file" id="image-upload" accept="image/*">
+
+                    <!-- Take Photo Button -->
+                    <button type="button" class="btn btn-secondary" id="take-photo-btn">Take Photo</button>
+
+                    <!-- Hidden camera input -->
+                    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;">
+                </div>
+
+                <div class="preview-container">
+                    <img id="upload-preview" alt="Eye image preview">
+                </div>
+
+                <button id="analyze-btn" class="btn analyze-btn">Analyze Image</button>
+
+
+                <div class="analysis-animation">
+                    <div class="spinner"></div>
+                    <p>Analyzing image, please wait...</p>
+                </div>
+
+                <div id="analysis-result">
+                    <h3 id="result-heading"></h3>
+                    <p id="result-description"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>About Cataracts</h2>
+                <p>Understanding the eye condition and its characteristics</p>
+            </div>
+            <div class="card-body">
+                <p>Cataracts are a clouding of the normally clear lens of the eye. For people who have cataracts, seeing
+                    through cloudy lenses is a bit like looking through a frosty or fogged-up window.</p>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                            Common Symptoms
+                        </h3>
+                        <ul>
+                            <li>Clouded, blurred or dim vision</li>
+                            <li>Increasing difficulty with vision at night</li>
+                            <li>Sensitivity to light and glare</li>
+                            <li>Seeing "halos" around lights</li>
+                            <li>Frequent changes in eyeglass prescription</li>
+                            <li>Fading or yellowing of colors</li>
+                            <li>Double vision in a single eye</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="16" x2="12" y2="12" />
+                                <line x1="12" y1="8" x2="12.01" y2="8" />
+                            </svg>
+                            Visual Characteristics
+                        </h3>
+                        <p>In eye images, cataracts may appear as:</p>
+                        <ul>
+                            <li>Cloudy or opaque areas in the pupil</li>
+                            <li>Yellowish or whitish discoloration of the lens</li>
+                            <li>Reduced clarity of iris details</li>
+                            <li>Diminished reflections from the eye surface</li>
+                            <li>Overall haziness in the pupillary area</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="image-comparison">
+                    <div class="comparison-image">
+                        <img src="{{ url_for('static', filename='images/Non-Cataract.jpg') }}"
+                            alt="Healthy eye example">
+                        <p>Healthy Eye</p>
+                    </div>
+                    <div class="comparison-image">
+                        <img src="{{ url_for('static', filename='images/Cataract.jpg') }}" alt="Eye with cataract">
+                        <p>Eye with Cataract</p>
+                    </div>
+                </div>
+
+                <p>If you experience any symptoms of cataracts, please consult with an ophthalmologist for proper
+                    evaluation and treatment options.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 EyeCheck Cataract Detection Tool | For Educational Purposes Only</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </footer>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="{{url_for('static', filename='scripts/base.js') }}"></script>
+</body>
+
+</html>
