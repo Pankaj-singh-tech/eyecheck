@@ -9,4 +9,4 @@ app.register_blueprint(api_bp)
 
 if __name__ == "__main__":
     with app.app_context():
-        app.run(host='192.168.0.87', debug=True, use_reloader=True)
+        app.run(debug=False,host='0.0.0.0')
