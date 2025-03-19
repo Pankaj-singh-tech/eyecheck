@@ -1,0 +1,28 @@
+.card {
+  margin: 2%;
+}
+/* Make the top navbar fixed */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000; /* Ensures it stays above other content */
+}
+
+/* Add padding to body to prevent content from being hidden under the fixed navbar */
+body {
+  padding-top: 56px; /* Adjust according to navbar height */
+}
+
+/* Make the side navbar fixed */
+#target {
+  position: fixed;
+  top: 56px; /* Adjust to match navbar height */
+  left: 0;
+  height: calc(100vh - 56px); /* Full height minus navbar */
+  overflow-y: auto; /* Enable scrolling if needed */
+}
+
+.error{
+  color: red;
+}

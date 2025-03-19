@@ -1,0 +1,21 @@
+{
+    "name": "EyeCheck",    
+    "short_name": "EyeCheck",
+    "start_url": ".",
+    "background_color": "#3ba2e7",
+    "theme_color": "#3ba2e7",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "/static/images/3-removebg-preview.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/images/3-removebg-preview.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "scope": "./"
+}
