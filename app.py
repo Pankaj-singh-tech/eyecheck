@@ -9,4 +9,4 @@ app.register_blueprint(api_bp)
 
 if __name__ == "__main__":
     with app.app_context():
-        app.run(debug=False,host='0.0.0.0')
+        app.run(debug=False,host='0.0.0.0',port=10000)
